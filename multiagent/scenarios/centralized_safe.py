@@ -9,6 +9,9 @@ class Scenario(BaseScenario):
 
         self.safety_margin  = 0.21 # extra distance to be kept from the agents
 
+        # Fix numpy seed for reproducibility
+        np.random.seed(0)
+
     def make_world(self):
         world = World()
         # set any world properties first
@@ -56,7 +59,7 @@ class Scenario(BaseScenario):
             has_collision = False
             for i in range(len(world.agents)):
                 for j in range(i + 1, len(world.agents), 1):
-                    if self.is_reasonable(world.agents[i],world.agents[j]):
+                    if self.is_safely_initialized(world.agents[i],world.agents[j]):
                         has_collision = True
 
 
@@ -76,7 +79,7 @@ class Scenario(BaseScenario):
                 has_collision = False
                 for i in range(len(world.landmarks)):
                     for j in range(i + 1, len(world.landmarks), 1):
-                        if self.is_reasonable(world.landmarks[i],world.landmarks[j]):
+                        if self.is_safely_initialized(world.landmarks[i],world.landmarks[j]):
                             has_collision = True
         else:
             for i, landmark in enumerate(world.landmarks):
@@ -121,7 +124,7 @@ class Scenario(BaseScenario):
 
         return True if dist < dist_min else False
 
-    def reward(self, agent, world, action_n):
+    def reward(self, agent, world):
         # Agents are rewarded based on minimum agent distance to each landmark, penalized for collisions
         rew = 0
 
@@ -132,7 +135,7 @@ class Scenario(BaseScenario):
         agent_pos  = agent.state.p_pos
 
         dist   = np.linalg.norm(target_pos - agent_pos,1)
-        action_norm = np.linalg.norm(action_n[idx])
+        #action_norm = np.linalg.norm(action_n[idx])
 
         rew = -dist #- 0.2*action_norm
 
@@ -169,7 +172,7 @@ class Scenario(BaseScenario):
 
         return np.concatenate([agent.state.p_vel] + [agent.state.p_pos] + entity_pos)
 
-    def constraints(self,agent, world):
+    def constraints(self, agent, world):
         # Constraint Type 1: Collisions with other robots
         other_agents = [a for a in world.agents if a is not agent]
 
@@ -180,5 +183,4 @@ class Scenario(BaseScenario):
         # Constraint Type 2: Obstacles
         # TODO
         return collision_signals
-
 
