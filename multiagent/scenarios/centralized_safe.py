@@ -7,8 +7,9 @@ class Scenario(BaseScenario):
         self.safe_landmarks = True # Pick the landmarks in a way
                                    # that the robots don't collide
 
-        self.safety_margin  = 0.2 # extra distance to be kept from the agents
+        self.safety_margin  = 0.2  # extra distance to be kept from the agents
         self.target_tol     = 0.02 # the tolerance of achieving the goal
+
         # Fix numpy seed for reproducibility
         np.random.seed(0)
 
@@ -125,7 +126,7 @@ class Scenario(BaseScenario):
         return True if dist < dist_min else False
 
     def done(self, agent, world):
-        
+
         # Get Agent index
         idx = int(agent.name.split(' ')[1])
 
@@ -135,37 +136,29 @@ class Scenario(BaseScenario):
 
         # compute l2 distance
         dist   = np.linalg.norm(target_pos - agent_pos)
-        
+
         return True if dist<self.target_tol else False
 
     def reward(self, agent, world):
-        # Agents are rewarded based on minimum agent distance to each landmark, penalized for collisions
+        # Agents are rewarded based on minimum agent distance to each landmark, 
+        # penalized for collisions
         rew = 0
 
         # Get Agent index
         idx = int(agent.name.split(' ')[1])
 
+        # Agent's Landmark
         target_pos = world.landmarks[idx].state.p_pos
         agent_pos  = agent.state.p_pos
 
-        dist   = np.linalg.norm(target_pos - agent_pos, 1)
-        rew = -dist 
+        dist = np.linalg.norm(target_pos - agent_pos, 1)
+        rew  = -dist
 
+        # Promote exact landing to target 
         if (dist < self.target_tol):
             rew += 5
 
-        '''
-        for i, l in enumerate(world.landmarks):
-            dists = [np.sqrt(np.sum(np.square(a.state.p_pos - l.state.p_pos))) for a in world.agents]
-
-            dists = np.linalg.norm(l.state.p_pos - world.agents[i].state.p_pos)
-
-            #rew -= min(dists)
-            # add a penalty on actions for stability
-            rew  -= dists[i]
-            rew  -= 0.25*np.linalg.norm(action_n[i], 2)
-        '''
-
+        # Add a small penalty if agents collide
         if agent.collide:
             for a in world.agents:
                 if self.is_collision(a, agent):
@@ -173,9 +166,6 @@ class Scenario(BaseScenario):
         return rew
 
     def observation(self, agent, world):
-        '''
-        TODO
-        '''
 
         # get positions of all entities in this agent's reference frame
         entity_pos = []
@@ -192,7 +182,5 @@ class Scenario(BaseScenario):
         for i, other in enumerate(other_agents):
             collision_signals[i] = np.linalg.norm(other.state.p_pos - agent.state.p_pos)
 
-        # Constraint Type 2: Obstacles
-        # TODO
         return collision_signals
 
