@@ -7,8 +7,8 @@ class Scenario(BaseScenario):
         self.safe_landmarks = True # Pick the landmarks in a way
                                    # that the robots don't collide
 
-        self.safety_margin  = 0.21 # extra distance to be kept from the agents
-
+        self.safety_margin  = 0.2 # extra distance to be kept from the agents
+        self.target_tol     = 0.02 # the tolerance of achieving the goal
         # Fix numpy seed for reproducibility
         np.random.seed(0)
 
@@ -124,6 +124,20 @@ class Scenario(BaseScenario):
 
         return True if dist < dist_min else False
 
+    def done(self, agent, world):
+        
+        # Get Agent index
+        idx = int(agent.name.split(' ')[1])
+
+        # get the agent and its target positions
+        target_pos = world.landmarks[idx].state.p_pos
+        agent_pos  = agent.state.p_pos
+
+        # compute l2 distance
+        dist   = np.linalg.norm(target_pos - agent_pos)
+        
+        return True if dist<self.target_tol else False
+
     def reward(self, agent, world):
         # Agents are rewarded based on minimum agent distance to each landmark, penalized for collisions
         rew = 0
@@ -134,12 +148,10 @@ class Scenario(BaseScenario):
         target_pos = world.landmarks[idx].state.p_pos
         agent_pos  = agent.state.p_pos
 
-        dist   = np.linalg.norm(target_pos - agent_pos)
-        #action_norm = np.linalg.norm(action_n[idx])
+        dist   = np.linalg.norm(target_pos - agent_pos, 1)
+        rew = -dist 
 
-        rew = -dist #- 0.2*action_norm
-
-        if (dist < 0.02):
+        if (dist < self.target_tol):
             rew += 5
 
         '''
