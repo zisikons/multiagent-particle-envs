@@ -134,7 +134,7 @@ class Scenario(BaseScenario):
         target_pos = world.landmarks[idx].state.p_pos
         agent_pos  = agent.state.p_pos
 
-        dist   = np.linalg.norm(target_pos - agent_pos,1)
+        dist   = np.linalg.norm(target_pos - agent_pos)
         #action_norm = np.linalg.norm(action_n[idx])
 
         rew = -dist #- 0.2*action_norm
