@@ -185,7 +185,7 @@ class Scenario(BaseScenario):
             other_agents_pos.append(other.state.p_pos - agent.state.p_pos)
 
         # Final state
-        x = np.concatenate([agent.state.p_pos] + [agent.state.p_vel]
+        x = np.concatenate([agent.state.p_vel] + [agent.state.p_pos]
                           + other_agents_pos + [agent_landmark])
 
         return x
