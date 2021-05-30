@@ -20,7 +20,7 @@ class Scenario(BaseScenario):
         world.dim_c = 2
         num_agents = 3
         num_landmarks = 3
-        world.collaborative = True
+        world.collaborative = False # check here for shared reward
 
         # add agents
         world.agents = [Agent() for i in range(num_agents)]
@@ -156,8 +156,8 @@ class Scenario(BaseScenario):
         rew  = -dist
 
         # Promote exact landing to target 
-        if (dist < self.target_tol):
-            rew += 5
+        #if (dist < self.target_tol): # may induce instability so check again
+        #    rew += 5
 
         # Add a small penalty if agents collide
         if agent.collide:
