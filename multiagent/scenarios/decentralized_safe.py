@@ -18,7 +18,7 @@ class Scenario(BaseScenario):
         world = World()
         # set any world properties first
         world.dim_c = 2
-        num_agents = 3
+        num_agents = 3 
         num_landmarks = 3
         world.collaborative = False # check here for shared reward
 
@@ -189,7 +189,7 @@ class Scenario(BaseScenario):
                           + other_agents_pos + [agent_landmark])
 
         return x
-
+    
     def constraints(self, agent, world):
         # Constraint Type 1: Collisions with other robots
         other_agents = [a for a in world.agents if a is not agent]
@@ -197,6 +197,4 @@ class Scenario(BaseScenario):
         collision_signals = np.zeros(len(world.agents) - 1)
         for i, other in enumerate(other_agents):
             collision_signals[i] = np.linalg.norm(other.state.p_pos - agent.state.p_pos)
-
         return collision_signals
-
