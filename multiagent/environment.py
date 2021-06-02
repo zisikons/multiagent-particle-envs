@@ -304,7 +304,14 @@ class MultiAgentEnv(gym.Env):
                 for y in np.linspace(-range_max, +range_max, 5):
                     dx.append(np.array([x,y]))
         return dx
-
+    
+    def get_env_parameters(self):
+        params = {}
+        params["state_dim"] = self.observation_space[0].shape[0]
+        params["act_dim"] = self.action_space[0].shape[0]
+        params["num_agents"] = self.n
+        params["constraint_dim"] = self.constraint_space[0].shape[0]
+        return params
 
 # vectorized wrapper for a batch of multi-agent environments
 # assumes all environments have the same observation and action space
