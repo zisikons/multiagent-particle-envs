@@ -59,11 +59,12 @@ class Scenario(BaseScenario):
 
             # Check if initial position violates constraints
             has_collision = False
+            '''
             for i in range(len(world.agents)):
                 for j in range(i + 1, len(world.agents), 1):
                     if self.is_safely_initialized(world.agents[i],world.agents[j]):
                         has_collision = True
-
+            '''
 
         for i, landmark in enumerate(world.landmarks):
             landmark.state.p_pos = np.random.uniform(-1, +1, world.dim_p)
