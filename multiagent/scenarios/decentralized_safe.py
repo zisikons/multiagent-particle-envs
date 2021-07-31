@@ -4,18 +4,20 @@ from multiagent.scenario import BaseScenario
 import ipdb
 
 class Scenario(BaseScenario):
-    def __init__(self):
+    def __init__(self, safe_initialization = True):
         self.safe_landmarks = True # Pick the landmarks in a way
                                    # that the robots don't collide
 
         self.safety_margin  = 0.2  # extra distance to be kept from the agents
         self.target_tol     = 0.02 # the tolerance of achieving the goal
+        self.safe_initialization = safe_initialization
 
         # Fix numpy seed for reproducibility
         np.random.seed(0)
 
     def make_world(self):
         world = World()
+        
         # set any world properties first
         world.dim_c = 2
         num_agents = 3 
@@ -60,13 +62,13 @@ class Scenario(BaseScenario):
             # Check if initial position violates constraints
             has_collision = False
             
-            '''
-            for i in range(len(world.agents)):
-                for j in range(i + 1, len(world.agents), 1):
-                    if self.is_safely_initialized(world.agents[i],world.agents[j]):
-                        has_collision = True
+            if self.safe_initialization:
+                for i in range(len(world.agents)):
+                    for j in range(i + 1, len(world.agents), 1):
+                        if self.is_safely_initialized(world.agents[i],world.agents[j]):
+                            has_collision = True
             
-            '''
+        
 
         for i, landmark in enumerate(world.landmarks):
             landmark.state.p_pos = np.random.uniform(-1, +1, world.dim_p)
